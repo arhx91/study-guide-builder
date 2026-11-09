@@ -3,7 +3,7 @@ name: study-guide-builder
 description: Build grounded, easy-to-understand study material (a study repo, a learning guide, a tutorial, explainer notes) for someone learning a technical topic for the first time. Grounds facts via Exa and Context7, writes in plain short sentences, and applies density/clarity fixes learned on real study-repo builds. Use when asked to create a study guide, learning material, a tutorial, prep notes for an interview/exam, to "teach me" / "explain X so I actually understand it" for a technical topic, or to refresh or grade an existing study guide.
 ---
 
-Build study material that a first-time learner can read in one pass, not a reference dump. Every rule below came from a corrective round on a real build. The stories behind the rules are in `references/lessons.md` — read it when a rule seems optional. If the material pairs with a slide deck, also read `references/slide-decks.md`.
+Build study material that a first-time learner can read in one pass, not a reference dump. Every rule below came from a corrective round on a real build. The stories behind the rules are in `references/lessons.md` — read it when a rule seems optional. If the material pairs with a slide deck, also read `references/slide-decks.md`. If the target is Obsidian, also read `references/obsidian.md`.
 
 Three modes. **Build** runs Steps 0 to 8 in order. **Refresh** updates an existing guide (see the end of this file). **Teach-back** grades a reader's own explanation (Step 4).
 
@@ -13,15 +13,18 @@ Terminology: a **file** is one markdown file in the study repo. A **§section** 
 
 A request to "build a study guide for X" is never fully specified. Run an intake in rounds of clickable questions (the AskUserQuestion tool). Give every question a recommended option, marked "(Recommended)" and listed first. After each round, ask whatever the answers unblocked. Stop when nothing that shapes the guide is unsettled.
 
-**Round 1 — scope.** One round, five questions:
+**Round 1 — scope.** One round, six questions. One call takes at most four questions, so ask them in two calls:
 
 - **Where it lives and how big.** One file, or a multi-file repo? Which folder or repo name? For a repo, settle GitHub and visibility now (Step 7).
 - **Depth, self-reported.** First-time learner, or a denser refresher? This is a claim — round 2 tests it.
 - **Adjacent domain.** What does the reader already know? This unlocks the bridge file (Step 3).
 - **Goal.** Interview, exam, project, or general learning? With no goal, skip the goal callouts in Step 4 and round 3.
 - **Time budget.** Three days and three weeks produce different guides. Scope file count and depth to the answer.
+- **Output target.** GitHub (Recommended) or Obsidian. The Obsidian target folds answers in callouts, links notes with wikilinks, and writes flashcards for the Spaced Repetition plugin. For Obsidian, read `references/obsidian.md` before you write.
 
 **Round 2 — calibration quiz.** Ask 3 to 5 multiple-choice questions on the topic, pitched at the claimed depth. Ground the quiz facts first (Step 1) — a wrong answer key miscalibrates everything after it. The answers, not the self-report, set the starting level: a wrong answer marks something to teach from scratch; a confident right answer marks something to compress or skip.
+
+This round is the exception to the "(Recommended)" rule. A calibration question has no recommended option, because the mark gives the answer away. Spread the correct answers over the option positions.
 
 **Round 3 — goal interrogation** (only with a named goal). Work backwards from the event: What will you be asked? What must you be able to do on day one? What does failure look like? The answers become the targets for the "Worth asking" callouts and the self-tests.
 
@@ -75,6 +78,8 @@ With a named goal, add sparse callouts: `> **Worth asking:** ...` — a real, an
 
 **Every Q&A aid hides its answer in a collapsed block** — quick checks, flashcards, practice questions, multiple-choice tests. No visible answer-key tables anywhere: an answer the eye can reach before the guess defeats retrieval.
 
+**The `<details>` block (GitHub target).** For the Obsidian target, use the folded callout in `references/obsidian.md`.
+
 ```
 > **Quick check:** <question>
 
@@ -114,6 +119,7 @@ Where a concept maps to a real tool, name it: not "a layout-aware parsing tool e
 - Number files by learning order. Cross-file references name the topic ("the Pydantic file"), never a bare number. `§N` refers only to the current file's own sections.
 - Build a master glossary grouped by topic, not 1:1 by file — merge files that are one continuous concern.
 - Derived aids (cheat sheet, flashcards, practice questions) regenerate together with the source content, every pass. They drift silently otherwise.
+- Obsidian target exception: edit card lines and their SR comments in place, never regenerate them. The SR comment under each card holds the reader's review history. Follow the refresh rules in `references/obsidian.md`.
 
 ## Step 8 — Verify, do not just report done
 
@@ -123,7 +129,11 @@ Run the checker from the folder next to this file, on the guide's folder:
 python3 scripts/check.py <guide folder>
 ```
 
-It fails on: merge-conflict markers, an odd number of code fences, unbalanced or pre-opened `<details>` blocks, a missing blank line around `<summary>` and `</details>`, glossary terms that never appear in the body, and a skewed multiple-choice answer distribution. It warns on stacked lines that merge into one paragraph, bare "Section N" references, and multiple-choice options with no `**Answer: X**` line. Fix every FAIL. Read every WARN — list items and soft-wrapped prose are false positives, stacked facts are not.
+It fails on: merge-conflict markers, an odd number of code fences, unbalanced or pre-opened `<details>` blocks, a missing blank line around `<summary>` and `</details>`, glossary terms that never appear in the body, and a skewed multiple-choice answer distribution. It warns on stacked lines that merge into one paragraph, bare "Section N" references, and multiple-choice options with no `**Answer: X**` line. Fix every FAIL. Read every WARN — list items and soft-wrapped prose are false positives, stacked facts are not. The Obsidian target has its own list of checks in `references/obsidian.md`. To run it, add `--target obsidian`:
+
+```bash
+python3 scripts/check.py --target obsidian <guide folder>
+```
 
 Then, by hand:
 
@@ -140,6 +150,6 @@ Use it when asked to refresh, update, or recheck an existing guide, or via `/stu
 2. **Recheck each claim** with Exa or Context7. Fetch the linked source first. If the link is dead or the page changed, search for the current fact.
 3. **Report before you edit.** One table: claim, what the guide says, what is true now, source. Mark each row unchanged, changed, or unverifiable. Stop and show the table.
 4. **Apply approved changes only.** Update the text and the link. If a changed fact invalidates a worked example or a quiz answer, fix those in the same pass.
-5. **Regenerate derived aids** (Step 7) and run the checker (Step 8).
+5. **Regenerate derived aids** (Step 7) and run the checker (Step 8). In Obsidian mode, follow the refresh rules in `references/obsidian.md`.
 
 Do not rewrite prose that is still true. A refresh changes facts, not style.

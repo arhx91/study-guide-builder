@@ -86,6 +86,8 @@ To check a guide by hand:
 python3 skills/study-guide-builder/scripts/check.py path/to/guide
 ```
 
+For a guide in an Obsidian vault, choose the Obsidian target in the first round of questions. Answers then fold in callouts, notes link with wikilinks, and flashcards work with the Spaced Repetition plugin. Check such a guide with `python3 skills/study-guide-builder/scripts/check.py --target obsidian path/to/guide`. The rules are in [`references/obsidian.md`](skills/study-guide-builder/references/obsidian.md).
+
 ## Optional
 
 - An `EXA_API_KEY` gives better grounding on fast-moving topics. Without it, the skill asks before it falls back to web search.

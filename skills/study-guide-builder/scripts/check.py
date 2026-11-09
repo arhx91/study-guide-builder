@@ -3,17 +3,31 @@
 
 Usage:
     python3 check.py [PATH ...]
+    python3 check.py --target obsidian [--card-separator TEXT] [--reversed-separator TEXT] [PATH ...]
 
 PATH is a markdown file or a folder. Folders are searched recursively.
 With no PATH, the current folder is checked.
 
+--target github (the default) checks a guide written for GitHub.
+--target obsidian checks notes written for Obsidian and the Spaced Repetition
+plugin: callouts, card sections, and links between the notes checked together.
+--card-separator and --reversed-separator give the plugin's one-line card
+separators (defaults ';;' and ';;;').
+
 Prints one line per finding, FAIL or WARN, then a summary.
 Exit code is 1 when there is at least one FAIL. WARN lines do not change it.
 """
+import argparse
 import pathlib
 import re
 import sys
 from collections import Counter
+
+_HERE = str(pathlib.Path(__file__).resolve().parent)
+if _HERE not in sys.path:
+    sys.path.insert(0, _HERE)  # find obsidian_checks next to this file, from any working folder
+
+import obsidian_checks  # noqa: E402
 
 SKIP_DIRS = {".git", "node_modules", ".venv", "venv"}
 ANSWER_RE = re.compile(r"\*\*Answer: ([A-D])\*\*")
@@ -281,9 +295,12 @@ def check_bare_sections(path, lines, mask, rep):
             rep.warn(path, i, "bare 'Section N' reference; name the file, or use §N for this file")
 
 
-def check_file(path, rep):
+def check_file(path, rep, target="github", seps=None, index=None):
     text = path.read_text(encoding="utf-8", errors="replace")
     lines = text.split("\n")
+    if target == "obsidian":
+        check_obsidian_file(path, lines, rep, seps, index)
+        return
     mask = fence_mask(lines)
     check_conflicts(path, lines, rep)
     check_fences(path, lines, rep)
@@ -294,15 +311,47 @@ def check_file(path, rep):
     check_bare_sections(path, lines, mask, rep)
 
 
+def check_obsidian_file(path, lines, rep, seps=None, index=None):
+    """Obsidian mode. The GitHub-only checks (details, stacked lines, multiple choice) are skipped."""
+    lines = obsidian_checks.clean_lines(lines)
+    if seps is None:
+        seps = obsidian_checks.Separators()
+    if index is None:
+        index = obsidian_checks.build_index([path])
+    mask = obsidian_checks.fence_mask(lines)
+    check_conflicts(path, lines, rep)
+    obsidian_checks.check_fences(path, lines, rep)
+    check_glossary(path, lines, mask, rep)
+    check_bare_sections(path, lines, mask, rep)
+    obsidian_checks.check_note(path, lines, rep, seps)
+    obsidian_checks.check_links(path, lines, rep, index)
+
+
+def parse_args(argv):
+    parser = argparse.ArgumentParser(prog=pathlib.Path(argv[0]).name if argv else "check.py",
+                                     description="Check study guides for mechanical faults.")
+    parser.add_argument("paths", nargs="*", default=["."], metavar="PATH",
+                        help="markdown file or folder (default: the current folder)")
+    parser.add_argument("--target", choices=["github", "obsidian"], default="github",
+                        help="where the guide is read (default: github)")
+    parser.add_argument("--card-separator", default=";;", metavar="TEXT",
+                        help="one-line card separator in Obsidian mode (default: ;;)")
+    parser.add_argument("--reversed-separator", default=";;;", metavar="TEXT",
+                        help="reversed one-line card separator in Obsidian mode (default: ;;;)")
+    return parser.parse_args(argv[1:])
+
+
 def main(argv):
-    paths = argv[1:] or ["."]
+    args = parse_args(argv)
+    seps = obsidian_checks.Separators(single=args.card_separator, reversed=args.reversed_separator)
     rep = Report()
-    files = list(markdown_files(paths))
+    files = list(markdown_files(args.paths))
     if not files:
         print("No markdown files found.")
         return 1
+    index = obsidian_checks.build_index(files) if args.target == "obsidian" else None
     for f in files:
-        check_file(f, rep)
+        check_file(f, rep, args.target, seps, index)
     print(f"\n{len(files)} files checked: {rep.fails} FAIL, {rep.warns} WARN")
     return 1 if rep.fails else 0
 

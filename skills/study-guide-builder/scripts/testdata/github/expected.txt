@@ -1,0 +1,11 @@
+FAIL testdata/github/guide.md:5: merge-conflict marker
+FAIL testdata/github/guide.md:0: odd number of code fences (1); a block never closes
+FAIL testdata/github/guide.md:17: <details open>: answer is visible before the guess
+FAIL testdata/github/guide.md:25: no blank line after <summary>; GitHub renders literal HTML
+FAIL testdata/github/guide.md:151: glossary term 'Watermark' never appears in the body
+WARN testdata/github/guide.md:9: 3 stacked lines merge into one paragraph on GitHub
+FAIL testdata/github/guide.md:32: **Answer: X** line outside a <details> block
+FAIL testdata/github/guide.md:0: answer skew: A is 67% of 9 answers (A=6 B=2 C=1 D=0)
+WARN testdata/github/guide.md:13: bare 'Section N' reference; name the file, or use §N for this file
+
+1 files checked: 7 FAIL, 2 WARN
