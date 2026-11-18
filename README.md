@@ -28,7 +28,7 @@ Fixing these on a real study repo took about a dozen rounds of corrections. This
 
 - Checks every fact with [Exa](https://exa.ai) and [Context7](https://context7.com). It never writes a version, price, or product name from memory. Facts that age get a source link.
 - Uses short sentences and active voice.
-- Gives every file the same shape: why it exists, a glossary, the content, a self-test, a teach-back prompt, and what comes next.
+- Gives every file the same shape: the big picture with a diagram, why it exists with a running example, a glossary, the content with a quick check per section, exam-style questions for an exam goal, a teach-back prompt, and what comes next.
 - Opens each section with a real example before the rule.
 - Draws decision trees as Mermaid flowcharts. Puts comparisons in tables.
 - Cuts anything that does not change a decision.
