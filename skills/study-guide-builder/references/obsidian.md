@@ -19,6 +19,8 @@ Keep highlight clozes off while `;;` is the separator. The plugin's cloze syntax
 
 The separators are a setting of this skill too. The defaults are `;;` and `;;;`. If the vault uses other separators, write the cards with those and give them to the checker (see "Run the checker"). The multi-line separators stay at the plugin defaults, `?` and `??`.
 
+A readable alternative is a pair of arrows: `⇒` for the single-line separator and `⇔` for the reversed one. Set the plugin's two single-line separators to these arrows. The trigger lines then read as a cheat sheet in the note. `Route one stream to several destinations ⇒ Eventstream` reads as a sentence, and `;;` reads as noise. Write one space on each side of the arrow. In a card's Not when row, write "use X instead" with `→`, a different character. Pass the arrows to the checker with `--card-separator '⇒' --reversed-separator '⇔'`. A stray arrow outside a card section then fails, just as `;;` does. Decide on the separators before the reader starts to review cards: a change after that means converting every card line in place, with its review history.
+
 Keep the flashcard tag `#flashcards`. Give each note that holds cards the nested tag `flashcards/<guide>` in its frontmatter. The nested tag makes a subdeck for the guide. The plugin reads cards only from tagged notes, so no other vault note is affected.
 
 ```yaml
@@ -37,7 +39,7 @@ Keep the guide's tags apart from the vault's stack tags. If the vault lists them
 1. Frontmatter with the tags.
 2. The `# Title`.
 3. The optional "Do this" callout and checklist.
-4. The Step 4 template: why this exists, `## Glossary`, the §sections with their quick checks.
+4. The Step 4 template, in this order: `## The big picture` with a Mermaid map, then `## Why this exists` with the running example, then `## Glossary`, then the §sections with their quick checks. If the goal is an exam, `## Exam-style questions` follows the last §section.
 5. `## Teach it back`, then `## What's next`.
 6. The card sections, last.
 
@@ -52,7 +54,7 @@ Keep the guide's tags apart from the vault's stack tags. If the vault lists them
 
 > [!question]- Answer
 > **Answer: B**
-> The eventstream routes events in flight. An eventhouse stores them for queries.
+> The eventstream routes events as they arrive. An eventhouse stores them for queries.
 ```
 
 The question stays visible. Only the answer folds.
@@ -88,10 +90,10 @@ Every answer region must fold (`-`) and must have a body.
 > `take`. The full query is `Events | take 10`.
 ~~~
 
-**Mock-exam questions** use the same shape with a `> **Question N:**` label. End each answer with a wikilink to the note that teaches it.
+**Mock-exam questions** use the same shape with a `> **Question N:**` label. End each answer with a wikilink to the note that teaches it. The questions under `## Exam-style questions` in a topic note use the same shape, without the wikilink.
 
 ```markdown
-> **Question 7:** Which item routes events in flight?
+> **Question 7:** Which item routes events as they arrive?
 > A. Eventhouse
 > B. Eventstream
 > C. Lakehouse
@@ -99,7 +101,7 @@ Every answer region must fold (`-`) and must have a body.
 
 > [!question]- Answer
 > **Answer: B**
-> The eventstream routes events. See [[dp700-10-eventstream#§1 Route events in flight]].
+> The eventstream routes events. See [[dp700-10-eventstream#§1 Route events as they arrive]].
 ```
 
 ## Code drills
@@ -136,6 +138,8 @@ Link to another note with a wikilink: `[[dp700-10-eventstream]]`. Link to a head
 
 Every link and every embed (`![[...]]`) must find its note in the guide folder. Every heading part must be a heading in that note. The checker ignores case in note names and headings, and extra spaces in headings. It skips links to URLs, embeds of attachments such as `![[diagram.png]]`, and links in code. For a `#^` block reference, it checks the note only.
 
+A note that is not written yet cannot take a wikilink, because the checker fails a link to a missing note. Name it as "(later note)" with its file name in inline code, for example "topic 12 (later note, `dp700-12-spark-structured-streaming`)". Fix every file name before the first note is written, so these references stay right. When all notes exist, turn each reference into a wikilink. Check every reference to a split or renamed note by its meaning, not only by its name.
+
 Seven characters can break a link (Obsidian help, "Internal links"): `#`, `|`, `^`, `:`, `%%`, `[[`, `]]`. Keep them out of every heading that a link points to. A card heading must never contain one, because the revision note embeds it.
 
 ## Flashcards
@@ -153,7 +157,7 @@ A multi-line card:
 
 ```markdown
 Which item routes one stream
-to several destinations in flight?
+to several destinations as they arrive?
 ?
 Eventstream
 ```
@@ -175,13 +179,13 @@ The plugin saves the review history in an SR comment on the line after each card
 
 | Field | |
 |---|---|
-| What it is | Routes events in flight |
+| What it is | Routes events as they arrive |
 | Use it when | One stream needs several destinations |
 | Not when | You must query the history → use an eventhouse instead |
 | Key facts | No code is necessary |
 | Docs | Learn page · search words: "eventstream overview" |
 
-Route events to several destinations in flight;;Eventstream
+Route events to several destinations as they arrive;;Eventstream
 ```
 
 Give each component one card section. The heading is `## <Component> (card)`: the name, one space, then `(card)`. The section runs to the next heading of the same or a higher level.
